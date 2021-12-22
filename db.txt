@@ -1,0 +1,28 @@
+CREATE TABLE sala(
+                     id integer constraint sala_pk primary key autoincrement,
+                     nr_locuri int
+);
+
+CREATE TABLE spectacol(
+                          id integer constraint spectacol_pk primary key autoincrement,
+                          data_spectacol date not null,
+                          title varchar(255) not null,
+                          pret_bilet int not null,
+                          sala_id int not null,
+                          CONSTRAINT fk_spectacol_sala FOREIGN KEY(sala_id) REFERENCES sala(id)
+);
+
+
+CREATE TABLE vanzare(
+                        id integer constraint vanzare_pk primary key autoincrement,
+                        data_vanzare date not null,
+                        spectacol_id int not null,
+                        CONSTRAINT fk_vanzare_spectacol FOREIGN KEY(spectacol_id) REFERENCES spectacol(id)
+);
+
+CREATE TABLE vanzarelocuri(
+                              id integer constraint vanzare_locuri_pk primary key autoincrement,
+                              nr_locuri int not null,
+                              vanzare_id int not null,
+                              CONSTRAINT fk_vanzare_locuri FOREIGN KEY(vanzare_id) REFERENCES vanzare(id)
+);

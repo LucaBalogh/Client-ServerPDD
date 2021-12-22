@@ -1,0 +1,33 @@
+ALTER SEQUENCE vanzare_locuri_id_seq RESTART WITH 1;
+ALTER SEQUENCE vanzare_id_seq RESTART WITH 1;
+ALTER SEQUENCE spectacol_id_seq RESTART WITH 1;
+ALTER SEQUENCE sala_id_eq RESTART WITH 1;
+
+insert into sala(nr_locuri)
+values
+(100);
+
+insert into spectacol(data_spectacol, title, pret_bilet, sala_id)
+values
+('2021-12-05', 'S1', 100, 1),
+('2021-12-06', 'S2', 200, 1),
+('2021-12-07', 'S3', 300, 1);
+
+insert into vanzare(data_vanzare, spectacol_id)
+values
+('2021-11-05', 1),
+('2021-11-05', 1),
+('2021-11-06', 2),
+('2021-11-06', 2),
+('2021-11-07', 3);
+
+insert into vanzarelocuri(nr_locuri, vanzare_id)
+values
+(10, 1),
+(5, 2),
+(15, 3),
+(20, 4),
+(25, 5);
+
+
+

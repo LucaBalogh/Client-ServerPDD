@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataSource name="proiect.db">
+  <database-model serializer="dbm" dbms="SQLITE" family-id="SQLITE" format-version="4.19">
+    <root id="1">
+      <ServerVersion>3.34.0</ServerVersion>
+    </root>
+    <schema id="2" parent="1" name="main">
+      <Current>1</Current>
+    </schema>
+    <collation id="3" parent="1" name="BINARY"/>
+    <collation id="4" parent="1" name="NOCASE"/>
+    <collation id="5" parent="1" name="RTRIM"/>
+    <table id="6" parent="2" name="sala"/>
+    <table id="7" parent="2" name="spectacol"/>
+    <table id="8" parent="2" name="sqlite_master">
+      <System>1</System>
+    </table>
+    <table id="9" parent="2" name="sqlite_sequence">
+      <System>1</System>
+    </table>
+    <table id="10" parent="2" name="vanzare"/>
+    <table id="11" parent="2" name="vanzarelocuri"/>
+    <column id="12" parent="6" name="id">
+      <Position>1</Position>
+      <DataType>integer|0s</DataType>
+      <SequenceIdentity>null</SequenceIdentity>
+    </column>
+    <column id="13" parent="6" name="nr_locuri">
+      <Position>2</Position>
+      <DataType>int|0s</DataType>
+    </column>
+    <key id="14" parent="6" name="sala_pk">
+      <ColNames>id</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <column id="15" parent="7" name="id">
+      <Position>1</Position>
+      <DataType>integer|0s</DataType>
+      <SequenceIdentity>null</SequenceIdentity>
+    </column>
+    <column id="16" parent="7" name="data_spectacol">
+      <Position>2</Position>
+      <DataType>date|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="17" parent="7" name="title">
+      <Position>3</Position>
+      <DataType>varchar(255)|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="18" parent="7" name="pret_bilet">
+      <Position>4</Position>
+      <DataType>int|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="19" parent="7" name="sala_id">
+      <Position>5</Position>
+      <DataType>int|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <key id="20" parent="7" name="spectacol_pk">
+      <ColNames>id</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <foreign-key id="21" parent="7" name="fk_spectacol_sala">
+      <ColNames>sala_id</ColNames>
+      <RefTableName>sala</RefTableName>
+      <RefKeyName>sala_pk</RefKeyName>
+      <RefColNames>id</RefColNames>
+    </foreign-key>
+    <column id="22" parent="8" name="type">
+      <Position>1</Position>
+      <DataType>text|0s</DataType>
+    </column>
+    <column id="23" parent="8" name="name">
+      <Position>2</Position>
+      <DataType>text|0s</DataType>
+    </column>
+    <column id="24" parent="8" name="tbl_name">
+      <Position>3</Position>
+      <DataType>text|0s</DataType>
+    </column>
+    <column id="25" parent="8" name="rootpage">
+      <Position>4</Position>
+      <DataType>int|0s</DataType>
+    </column>
+    <column id="26" parent="8" name="sql">
+      <Position>5</Position>
+      <DataType>text|0s</DataType>
+    </column>
+    <column id="27" parent="9" name="name">
+      <Position>1</Position>
+    </column>
+    <column id="28" parent="9" name="seq">
+      <Position>2</Position>
+    </column>
+    <column id="29" parent="10" name="id">
+      <Position>1</Position>
+      <DataType>integer|0s</DataType>
+      <SequenceIdentity>null</SequenceIdentity>
+    </column>
+    <column id="30" parent="10" name="data_vanzare">
+      <Position>2</Position>
+      <DataType>date|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="31" parent="10" name="spectacol_id">
+      <Position>3</Position>
+      <DataType>int|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <key id="32" parent="10" name="vanzare_pk">
+      <ColNames>id</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <foreign-key id="33" parent="10" name="fk_vanzare_spectacol">
+      <ColNames>spectacol_id</ColNames>
+      <RefTableName>spectacol</RefTableName>
+      <RefKeyName>spectacol_pk</RefKeyName>
+      <RefColNames>id</RefColNames>
+    </foreign-key>
+    <column id="34" parent="11" name="id">
+      <Position>1</Position>
+      <DataType>integer|0s</DataType>
+      <SequenceIdentity>null</SequenceIdentity>
+    </column>
+    <column id="35" parent="11" name="nr_locuri">
+      <Position>2</Position>
+      <DataType>int|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="36" parent="11" name="vanzare_id">
+      <Position>3</Position>
+      <DataType>int|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <key id="37" parent="11" name="vanzare_locuri_pk">
+      <ColNames>id</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <foreign-key id="38" parent="11" name="fk_vanzare_locuri">
+      <ColNames>vanzare_id</ColNames>
+      <RefTableName>vanzare</RefTableName>
+      <RefKeyName>vanzare_pk</RefKeyName>
+      <RefColNames>id</RefColNames>
+    </foreign-key>
+  </database-model>
+</dataSource>
