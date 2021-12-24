@@ -1,2 +1,4 @@
 rootProject.name = 'TicketSeller'
+include 'Server'
+include 'Client'
 
