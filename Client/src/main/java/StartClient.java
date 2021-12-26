@@ -22,20 +22,21 @@ public class StartClient {
     }
 
     public static void main(String[] args){
-        ApplicationContext factory = new ClassPathXmlApplicationContext("classpath:spring-client.xml");
-        IService server=(IService)factory.getBean("appService");
-        System.out.println("S-a facut conexiunea la server!");
-        List<Spectacol> s = server.getAllSpectacol();
+        try{
+            ApplicationContext factory = new ClassPathXmlApplicationContext("classpath:spring-client.xml");
+            IService server=(IService)factory.getBean("appService");
+            System.out.println("S-a facut conexiunea la server!");
+            List<Spectacol> s = server.getAllSpectacol();
 
-        for(Spectacol ss : s)
-            System.out.println(ss);
-        System.out.println(server.getSoldTotal());
-        System.out.println(server.checkSoldTotal());
-        System.out.println(server.getLocuriLibere(1));
-        System.out.println(server.checkLocuriLibere(1));
+            for(Spectacol ss : s)
+                System.out.println(ss);
+            System.out.println(server.getSoldTotal());
+            System.out.println(server.checkSoldTotal());
+            System.out.println(server.getLocuriLibere(1));
+            System.out.println(server.checkLocuriLibere(1));
 
-        Timer cumparare = new Timer();
-        cumparare.scheduleAtFixedRate(
+            Timer cumparare = new Timer();
+            cumparare.scheduleAtFixedRate(
                 new TimerTask() {
                     int vanzare = server.getAllVanzare().get(server.getAllVanzare().size() - 1).getId();
                     int bilete = generateTicketNumber(1, 15);
@@ -58,10 +59,10 @@ public class StartClient {
                 },
                 5000,
                 10000
-        );
+            );
 
-        Timer testare = new Timer();
-        testare.scheduleAtFixedRate(
+            Timer testare = new Timer();
+            testare.scheduleAtFixedRate(
                 new TimerTask() {
                     @Override
                     public void run() {
@@ -80,6 +81,10 @@ public class StartClient {
                 },
                 5000,
                 10000
-        );
+            );
+
+        }catch (Exception e){
+            System.out.println("Server ul nu este activ!");
+        }
     }
 }
