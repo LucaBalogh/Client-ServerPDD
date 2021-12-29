@@ -55,6 +55,7 @@ public class Vanzare extends Entity<Integer> {
         return "Vanzare{" +
                 "data='" + date_vanzare +
                 "spectacolul='" + spectacol_id +
+                "locuri vandute= "+ locuri_vandute+
                 '}';
     }
 }

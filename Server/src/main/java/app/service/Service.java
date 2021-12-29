@@ -7,8 +7,14 @@ import app.repo.interfaces.ISala;
 import app.repo.interfaces.ISpectacol;
 import app.repo.interfaces.IVanzare;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Service implements IService {
     private static final int NTHREADS = 5;
@@ -21,6 +27,31 @@ public class Service implements IService {
         this.salaRepo = salaRepo;
         this.spectacolRepo = spectacolRepo;
         this.vanzareRepo = vanzareRepo;
+
+        try {
+            FileWriter myWriter = new FileWriter("verificari.txt");
+            myWriter.write("");
+        } catch (IOException ioException) {
+            ioException.printStackTrace();
+        }
+
+        Thread threadVerificare = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Timer testare = new Timer();
+                testare.scheduleAtFixedRate(
+                        new TimerTask() {
+                            @Override
+                            public void run() {
+                                verificare();
+                            }
+                        },
+                        5000,
+                        10000
+                );
+            }
+        });
+        threadVerificare.start();
     }
 
     @Override
@@ -50,7 +81,9 @@ public class Service implements IService {
 
     @Override
     public void addVanzare(Vanzare v) {
-        vanzareRepo.add(v);
+        if (getLocuriLibere(v.getSpectacol()).containsAll(v.getLocuri_vandute())) {
+            vanzareRepo.add(v);
+        }
     }
 
     @Override
@@ -85,6 +118,16 @@ public class Service implements IService {
         return getSoldTotal() == sold;
     }
 
+    private int getSoldSpectacol(int spectacol_id){
+        int sold = 0;
+        Spectacol s = spectacolRepo.findOne(spectacol_id);
+        List<Vanzare> vanzari = vanzareRepo.findAllBySpectacolId(spectacol_id);
+        for (Vanzare v : vanzari) {
+            sold += s.getPret_bilet() * v.getNr_locuri_vandute();
+        }
+        return sold;
+    }
+
     @Override
     public List<Integer> getLocuriLibere(int spectacol_id) {
         Sala s = salaRepo.findAll().get(0);
@@ -108,7 +151,36 @@ public class Service implements IService {
         for (Vanzare v : vanzari) {
             locuriVandute.addAll(v.getLocuri_vandute());
         }
-        return getLocuriLibere(spectacol_id).size() == s.getNr_locuri() - locuriVandute.size();  //nr_locuri
+        return getLocuriLibere(spectacol_id).size() == s.getNr_locuri() - locuriVandute.size();
+    }
+
+    private void verificare(){
+        int ok = 0;
+        for (Spectacol s : getAllSpectacol()) {
+            if (checkLocuriLibere(s.getId()) && checkSoldTotal())
+                ok = 1;
+            else
+                ok = 0;
+        }
+        if (ok == 1)
+            System.out.println("Testarea a fost efectuata cu succes!");
+        else
+            System.out.println("Au fost probleme odata cu testarea!");
+        try {
+            FileWriter myWriter = new FileWriter("verificari.txt",true);
+            myWriter.write(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss"))+"\n");
+            for(var s:spectacolRepo.findAll()) {
+                myWriter.write(s+", sold: "+getSoldSpectacol(s.getId())+", locuri vandute: "+s.getLocuri_vandute()+"\n");
+            }
+            if(ok==1)
+                myWriter.write("Rezultat verificare: corect");
+            else
+                myWriter.write("Rezultat verificare: incorect");
+            myWriter.write("\n");
+            myWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
 

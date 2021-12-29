@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface ISpectacol extends Repository<Integer, Spectacol> {
     List<Spectacol> findAllBySalaId(int salaId);
+    Spectacol findOne(int id);
 }

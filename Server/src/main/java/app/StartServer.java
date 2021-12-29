@@ -1,14 +1,11 @@
 package app;
 
-import app.model.Spectacol;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import java.rmi.NoSuchObjectException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -27,10 +24,10 @@ public class StartServer {
                     @Override
                     public void run() {
                         ((ConfigurableApplicationContext)factory).close();
+                        System.exit(0);
                     }
                 },
                 120000
         );
-
     }
 }

@@ -4,6 +4,7 @@ import app.service.IService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import java.rmi.RemoteException;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -11,17 +12,17 @@ public class StartClient {
 
     public static int generateTicketNumber(int min, int max) {
         int range = (max - min) + 1;
-        return (int)(Math.random() * range) + min;
+        return (int) (Math.random() * range) + min;
     }
 
     public static void main(String[] args){
-        try{
+        try {
             ApplicationContext factory = new ClassPathXmlApplicationContext("classpath:spring-client.xml");
-            IService server=(IService)factory.getBean("appService");
+            IService server = (IService) factory.getBean("appService");
             System.out.println("S-a facut conexiunea la server!");
             List<Spectacol> s = server.getAllSpectacol();
 
-            for(Spectacol ss : s)
+            for (Spectacol ss : s)
                 System.out.println(ss);
             System.out.println(server.getSoldTotal());
             System.out.println(server.checkSoldTotal());
@@ -30,59 +31,47 @@ public class StartClient {
 
             Timer cumparare = new Timer();
             cumparare.scheduleAtFixedRate(
-                new TimerTask() {
-                    //int vanzare = server.getAllVanzare().get(server.getAllVanzare().size() - 1).getId();
-                    //int nrBilete = generateTicketNumber(1, 15);
-                    //int spectacol_id = generateTicketNumber(1, 3);
-                    @Override
-                    public void run() {
-                        int spectacol_id = generateTicketNumber(1, 3);
-                        int min = 15;
-                        List<Integer> locuriLibere = server.getLocuriLibere(spectacol_id);
-                        if(locuriLibere.size()<min) min = locuriLibere.size();
-                        int nrBilete = generateTicketNumber(1, min);
-                        Collections.shuffle(locuriLibere);
-                        List<Integer> locuriVandute = new ArrayList<>(locuriLibere.subList(0,nrBilete));
-                        Vanzare v = new Vanzare(LocalDate.now(), spectacol_id,locuriVandute);
-                        try{
-                            server.addVanzare(v);
-                            System.out.println("Vanzarea a fost realizata cu succes!");;
-                        }
-                        catch (Exception ex) {
-                            System.out.println("Vanzarea nu a putut fi realizata!");
-                        }
+                    new TimerTask() {
+                        @Override
+                        public void run() {
+                            try {
+                                int spectacol_id = generateTicketNumber(1, server.getAllSpectacol().size());
+                                int min = 15;
+                                List<Integer> locuriLibere = server.getLocuriLibere(spectacol_id);
+                                if (locuriLibere.size() != 0) {
+                                    if (locuriLibere.size() < min) min = locuriLibere.size();
+                                    int nrBilete = generateTicketNumber(1, min);
+                                    Collections.shuffle(locuriLibere);
+                                    List<Integer> locuriVandute = new ArrayList<>(locuriLibere.subList(0, nrBilete));
+                                    Vanzare v = new Vanzare(LocalDate.now(), spectacol_id, locuriVandute);
+                                    try {
+                                        server.addVanzare(v);
+                                        System.out.println("Vanzarea a fost realizata cu succes!");
+                                    } catch (Exception ex) {
+                                        System.out.println("Vanzarea nu a putut fi realizata!");
+                                    }
+                                }
+                                boolean liber = false;
+                                for (Spectacol s : server.getAllSpectacol())
+                                    if (server.getLocuriLibere(s.getId()).size() > 0) {
+                                        liber = true;
+                                        break;
+                                    }
+                                if (!liber)
+                                    cumparare.cancel();
+                            }
+                            catch (RemoteException ex){
+                                System.out.println("Server ul nu mai este activ!");
+                                cumparare.cancel();
+                            }
 
-                        if(server.getLocuriLibere(spectacol_id).size() == 0)
-                            cumparare.cancel();
-                    }
-                },
-                5000,
-                2000
-            );
-
-            Timer testare = new Timer();
-            testare.scheduleAtFixedRate(
-                new TimerTask() {
-                    @Override
-                    public void run() {
-                        int ok = 0;
-                        for(Spectacol s : server.getAllSpectacol()){
-                            if(server.checkLocuriLibere(s.getId()) && server.checkSoldTotal())
-                                ok = 1;
-                            else
-                                ok = 0;
                         }
-                        if(ok == 1)
-                            System.out.println("Testarea a fost efectuata cu succes!");
-                        else
-                            System.out.println("Au fost probleme odata cu testarea!");
-                    }
-                },
-                5000,
-                10000
+                    },
+                    5000,
+                    2000
             );
-        }catch (Exception e){
-            System.out.println("Server ul nu este activ!");
+        } catch (Exception e) {
+            System.out.println("Server ul nu mai este activ!");
         }
     }
 }
