@@ -44,10 +44,8 @@ public class StartClient {
                         Collections.shuffle(locuriLibere);
                         List<Integer> locuriVandute = new ArrayList<>(locuriLibere.subList(0,nrBilete));
                         Vanzare v = new Vanzare(LocalDate.now(), spectacol_id,locuriVandute);
-                        //VanzareLocuri vL = new VanzareLocuri(nrBilete, vanzare);
-                        try{  //if(server.getLocuriLibere(spectacol_id) >= vL.getNr_locuri())
+                        try{
                             server.addVanzare(v);
-                            //server.addVanzareLocuri(vL);
                             System.out.println("Vanzarea a fost realizata cu succes!");;
                         }
                         catch (Exception ex) {

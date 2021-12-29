@@ -18,15 +18,10 @@
         <constructor-arg ref="prop"/>
     </bean>
 
-    <bean id="vanzareLocuriRepo" class="app.repo.database.VanzareLocuriDBRepository">
-        <constructor-arg ref="prop"/>
-    </bean>
-
     <bean id="appService" class="app.service.Service">
         <constructor-arg ref="salaRepo"/>
         <constructor-arg ref="spectacolRepo"/>
         <constructor-arg ref="vanzareRepo"/>
-        <constructor-arg ref="vanzareLocuriRepo"/>
     </bean>
 
     <bean class="org.springframework.remoting.rmi.RmiServiceExporter">
