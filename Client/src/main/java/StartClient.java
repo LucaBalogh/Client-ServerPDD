@@ -1,18 +1,11 @@
-import app.model.Sala;
 import app.model.Spectacol;
 import app.model.Vanzare;
-import app.model.VanzareLocuri;
 import app.service.IService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 public class StartClient {
 
@@ -38,27 +31,35 @@ public class StartClient {
             Timer cumparare = new Timer();
             cumparare.scheduleAtFixedRate(
                 new TimerTask() {
-                    int vanzare = server.getAllVanzare().get(server.getAllVanzare().size() - 1).getId();
-                    int bilete = generateTicketNumber(1, 15);
-                    int spectacol_id = generateTicketNumber(1, 3);
+                    //int vanzare = server.getAllVanzare().get(server.getAllVanzare().size() - 1).getId();
+                    //int nrBilete = generateTicketNumber(1, 15);
+                    //int spectacol_id = generateTicketNumber(1, 3);
                     @Override
                     public void run() {
-                        Vanzare v = new Vanzare(LocalDate.now(), spectacol_id);
-                        VanzareLocuri vL = new VanzareLocuri(bilete, vanzare);
-                        if(server.getLocuriLibere(1) >= vL.getNr_locuri()){
+                        int spectacol_id = generateTicketNumber(1, 3);
+                        int min = 15;
+                        List<Integer> locuriLibere = server.getLocuriLibere(spectacol_id);
+                        if(locuriLibere.size()<min) min = locuriLibere.size();
+                        int nrBilete = generateTicketNumber(1, min);
+                        Collections.shuffle(locuriLibere);
+                        List<Integer> locuriVandute = new ArrayList<>(locuriLibere.subList(0,nrBilete));
+                        Vanzare v = new Vanzare(LocalDate.now(), spectacol_id,locuriVandute);
+                        //VanzareLocuri vL = new VanzareLocuri(nrBilete, vanzare);
+                        try{  //if(server.getLocuriLibere(spectacol_id) >= vL.getNr_locuri())
                             server.addVanzare(v);
-                            server.addVanzareLocuri(vL);
+                            //server.addVanzareLocuri(vL);
                             System.out.println("Vanzarea a fost realizata cu succes!");;
                         }
-                        else
+                        catch (Exception ex) {
                             System.out.println("Vanzarea nu a putut fi realizata!");
+                        }
 
-                        if(server.getLocuriLibere(spectacol_id) == 100)
+                        if(server.getLocuriLibere(spectacol_id).size() == 0)
                             cumparare.cancel();
                     }
                 },
                 5000,
-                10000
+                2000
             );
 
             Timer testare = new Timer();
@@ -82,7 +83,6 @@ public class StartClient {
                 5000,
                 10000
             );
-
         }catch (Exception e){
             System.out.println("Server ul nu este activ!");
         }

@@ -1,6 +1,8 @@
 package app.model;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Spectacol extends Entity<Integer> {
 
@@ -12,6 +14,8 @@ public class Spectacol extends Entity<Integer> {
 
     private int sala_id;
 
+    private List<Integer> locuri_vandute;
+
 
     public Spectacol() {}
 
@@ -20,6 +24,7 @@ public class Spectacol extends Entity<Integer> {
         this.titlu = titlu;
         this.pret_bilet = pret_bilet;
         this.sala_id = sala_id;
+        locuri_vandute = new ArrayList<>();
     }
 
     public LocalDate getData_spectacol() {
@@ -52,6 +57,14 @@ public class Spectacol extends Entity<Integer> {
 
     public void setSala(int sala) {
         this.sala_id = sala;
+    }
+
+    public List<Integer> getLocuri_vandute() {
+        return locuri_vandute;
+    }
+
+    public void setLocuri_vandute(List<Integer> locuri_vandute) {
+        this.locuri_vandute = locuri_vandute;
     }
 
     @Override

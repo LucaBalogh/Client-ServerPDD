@@ -124,7 +124,7 @@
       <DataType>integer|0s</DataType>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="35" parent="11" name="nr_locuri">
+    <column id="35" parent="11" name="nr_loc">
       <Position>2</Position>
       <DataType>int|0s</DataType>
       <NotNull>1</NotNull>
@@ -138,7 +138,7 @@
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="38" parent="11" name="fk_vanzare_locuri">
+    <foreign-key id="38" parent="11">
       <ColNames>vanzare_id</ColNames>
       <RefTableName>vanzare</RefTableName>
       <RefKeyName>vanzare_pk</RefKeyName>

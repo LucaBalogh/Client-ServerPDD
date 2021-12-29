@@ -19,8 +19,6 @@ public class SpectacolDBRepository implements ISpectacol {
 
     private JdbcUtils dbUtils;
 
-
-
     private static final Logger logger= LogManager.getLogger();
 
     public SpectacolDBRepository(Properties props) {
@@ -68,8 +66,24 @@ public class SpectacolDBRepository implements ISpectacol {
                     int pret_bilet = result.getInt("pret_bilet");
                     int sala_id = result.getInt("sala_id");
 
+                    List<Integer> locuriVandute = new ArrayList<>();
+
+                    PreparedStatement preStmt2 = con.prepareStatement("select * from vanzare where spectacol_id=?");
+                    preStmt2.setInt(1,id);
+                    ResultSet result2 = preStmt2.executeQuery();
+                    while (result2.next()){
+                        int id_v = result2.getInt("id");
+                        PreparedStatement preStmt3 = con.prepareStatement("select * from vanzareLocuri where vanzare_id=?");
+                        preStmt3.setInt(1,id_v);
+                        ResultSet result3 = preStmt3.executeQuery();
+                        while (result3.next()){
+                            int nrLoc = result3.getInt("nr_loc");
+                            locuriVandute.add(nrLoc);
+                        }
+                    }
                     Spectacol p = new Spectacol(data_spectacol, titlu, pret_bilet, sala_id);
                     p.setId(id);
+                    p.setLocuri_vandute(locuriVandute);
                     spectacole.add(p);
                 }
             }
@@ -98,8 +112,25 @@ public class SpectacolDBRepository implements ISpectacol {
                 String titlu = result.getString("title");
                 int pret_bilet = result.getInt("pret_bilet");
                 int sala_id = result.getInt("sala_id");
+
+                List<Integer> locuriVandute = new ArrayList<>();
+
+                PreparedStatement preStmt2 = con.prepareStatement("select * from vanzare where spectacol_id=?");
+                preStmt2.setInt(1,idd);
+                ResultSet result2 = preStmt2.executeQuery();
+                while (result2.next()){
+                    int id_v = result2.getInt("id");
+                    PreparedStatement preStmt3 = con.prepareStatement("select * from vanzareLocuri where vanzare_id=?");
+                    preStmt3.setInt(1,id_v);
+                    ResultSet result3 = preStmt3.executeQuery();
+                    while (result3.next()){
+                        int nrLoc = result3.getInt("nr_loc");
+                        locuriVandute.add(nrLoc);
+                    }
+                }
                 Spectacol s = new Spectacol(data_spectacol, titlu, pret_bilet, sala_id);
                 s.setId(idd);
+                s.setLocuri_vandute(locuriVandute);
                 spectacole.add(s);
             }
         } catch (SQLException e) {

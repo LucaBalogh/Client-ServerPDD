@@ -24,7 +24,7 @@ public interface IService {
 
     public int getSoldTotal();
 
-    public int getLocuriLibere(int spectacol_id);
+    public List<Integer> getLocuriLibere(int spectacol_id);
 
     public boolean checkLocuriLibere(int spectacol_id);
 
@@ -33,4 +33,5 @@ public interface IService {
     public void addVanzareLocuri(VanzareLocuri vL);
 
     public boolean checkSoldTotal();
+
 }
