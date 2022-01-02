@@ -19,11 +19,11 @@ public class VanzareDBRepository implements IVanzare {
 
     private JdbcUtils dbUtils;
 
-    private static final Logger logger= LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger();
 
     public VanzareDBRepository(Properties props) {
-        logger.info("Initializing VanzareDBRepository with properties: {} ",props);
-        dbUtils=new JdbcUtils(props);
+        logger.info("Initializing VanzareDBRepository with properties: {} ", props);
+        dbUtils = new JdbcUtils(props);
     }
 
 
@@ -32,7 +32,7 @@ public class VanzareDBRepository implements IVanzare {
         logger.traceEntry("saving task {}", elem);
         Connection con = dbUtils.getConnection();
 
-        try(PreparedStatement preStmt = con.prepareStatement("insert into vanzare (data_vanzare,spectacol_id) values (?,?)", new String[]{"id"})){
+        try (PreparedStatement preStmt = con.prepareStatement("insert into vanzare (data_vanzare,spectacol_id) values (?,?)", new String[]{"id"})) {
             preStmt.setString(1, elem.getDate_vanzare().toString());
             preStmt.setInt(2, elem.getSpectacol());
 
@@ -40,16 +40,18 @@ public class VanzareDBRepository implements IVanzare {
             ResultSet rs = preStmt.getGeneratedKeys();
             int id = rs.getInt(1);
 
-            for(Integer loc : elem.getLocuri_vandute()){
-                PreparedStatement preStmt2 = con.prepareStatement("insert into vanzareLocuri (nr_loc,vanzare_id) values (?,?)");
-                preStmt2.setInt(1, loc);
-                preStmt2.setInt(2, id);
+            if (id != 0) {
+                for (Integer loc : elem.getLocuri_vandute()) {
+                    PreparedStatement preStmt2 = con.prepareStatement("insert into vanzareLocuri (nr_loc,vanzare_id) values (?,?)");
+                    preStmt2.setInt(1, loc);
+                    preStmt2.setInt(2, id);
 
-                preStmt2.executeUpdate();
+                    preStmt2.executeUpdate();
+
+                }
             }
-            logger.trace("Saved {} instance",result);
-        }
-        catch (SQLException ex){
+            logger.trace("Saved {} instance", result);
+        } catch (SQLException ex) {
             logger.error(ex);
             System.err.println("Error DB" + ex);
         }
@@ -62,7 +64,7 @@ public class VanzareDBRepository implements IVanzare {
         Connection con = dbUtils.getConnection();
         List<Vanzare> vanzari = new ArrayList<>();
 
-        try(PreparedStatement preStmt = con.prepareStatement("select * from vanzare")) {
+        try (PreparedStatement preStmt = con.prepareStatement("select * from vanzare")) {
             try (ResultSet result = preStmt.executeQuery()) {
                 while (result.next()) {
                     int id = result.getInt("id");
@@ -72,20 +74,19 @@ public class VanzareDBRepository implements IVanzare {
                     List<Integer> locuriVandute = new ArrayList<>();
 
                     PreparedStatement preStmt2 = con.prepareStatement("select * from vanzareLocuri where vanzare_id=?");
-                    preStmt2.setInt(1,id);
+                    preStmt2.setInt(1, id);
                     ResultSet result2 = preStmt2.executeQuery();
                     while (result2.next()) {
                         int nrLoc = result2.getInt("nr_loc");
                         locuriVandute.add(nrLoc);
                     }
 
-                    Vanzare v = new Vanzare(data_vanzare, spectacol_id,locuriVandute);
+                    Vanzare v = new Vanzare(data_vanzare, spectacol_id, locuriVandute);
                     v.setId(id);
                     vanzari.add(v);
                 }
             }
-        }
-        catch(SQLException e){
+        } catch (SQLException e) {
             logger.error(e);
             System.err.println("Error DB" + e);
         }
@@ -98,11 +99,11 @@ public class VanzareDBRepository implements IVanzare {
         logger.traceEntry();
         Connection con = dbUtils.getConnection();
         List<Vanzare> vanzari = new ArrayList<>();
-        try(PreparedStatement preStmt=con.prepareStatement("select * from vanzare where spectacol_id=?")){
-            preStmt.setInt(1,id);
-            ResultSet result=preStmt.executeQuery();
-            System.out.println("findBySpecatcolId  "+ "resOk");
-            while(result.next()){
+        try (PreparedStatement preStmt = con.prepareStatement("select * from vanzare where spectacol_id=?")) {
+            preStmt.setInt(1, id);
+            ResultSet result = preStmt.executeQuery();
+            System.out.println("findBySpecatcolId  " + "resOk");
+            while (result.next()) {
                 int idd = result.getInt("id");
                 LocalDate date_vanzare = LocalDate.parse(result.getString("data_vanzare"));
                 int spectacol_id = result.getInt("spectacol_id");
@@ -110,19 +111,19 @@ public class VanzareDBRepository implements IVanzare {
                 List<Integer> locuriVandute = new ArrayList<>();
 
                 PreparedStatement preStmt2 = con.prepareStatement("select * from vanzareLocuri where vanzare_id=?");
-                preStmt2.setInt(1,idd);
+                preStmt2.setInt(1, idd);
                 ResultSet result2 = preStmt2.executeQuery();
                 while (result2.next()) {
                     int nrLoc = result2.getInt("nr_loc");
                     locuriVandute.add(nrLoc);
                 }
 
-                Vanzare ins = new Vanzare(date_vanzare,spectacol_id,locuriVandute);
+                Vanzare ins = new Vanzare(date_vanzare, spectacol_id, locuriVandute);
                 ins.setId(idd);
                 vanzari.add(ins);
             }
         } catch (SQLException e) {
-            System.out.println("Error DB "+e);
+            System.out.println("Error DB " + e);
         }
         logger.traceExit(vanzari);
         return vanzari;

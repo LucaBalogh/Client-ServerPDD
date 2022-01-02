@@ -15,9 +15,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class Service implements IService {
-    private static final int NTHREADS = 5;
+    private static final int NTHREADS = 1;
+    private ExecutorService executor;
+
 
     private ISala salaRepo;
     private ISpectacol spectacolRepo;
@@ -35,6 +41,8 @@ public class Service implements IService {
             ioException.printStackTrace();
         }
 
+        this.executor = Executors.newFixedThreadPool(NTHREADS);
+
         Thread threadVerificare = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -43,7 +51,11 @@ public class Service implements IService {
                         new TimerTask() {
                             @Override
                             public void run() {
-                                verificare();
+                                try {
+                                    verificare().get();
+                                } catch (InterruptedException | ExecutionException e) {
+                                    e.printStackTrace();
+                                }
                             }
                         },
                         5000,
@@ -81,9 +93,20 @@ public class Service implements IService {
 
     @Override
     public void addVanzare(Vanzare v) {
-        if (getLocuriLibere(v.getSpectacol()).containsAll(v.getLocuri_vandute())) {
-            vanzareRepo.add(v);
+        try {
+            vanzareAsync(v).get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
         }
+    }
+
+    private Future<?> vanzareAsync(Vanzare v) {
+        return executor.submit(() -> {
+            if (getLocuriLibere(v.getSpectacol()).containsAll(v.getLocuri_vandute())) {
+                vanzareRepo.add(v);
+            }
+        });
+
     }
 
     @Override
@@ -118,7 +141,7 @@ public class Service implements IService {
         return getSoldTotal() == sold;
     }
 
-    private int getSoldSpectacol(int spectacol_id){
+    private int getSoldSpectacol(int spectacol_id) {
         int sold = 0;
         Spectacol s = spectacolRepo.findOne(spectacol_id);
         List<Vanzare> vanzari = vanzareRepo.findAllBySpectacolId(spectacol_id);
@@ -154,33 +177,35 @@ public class Service implements IService {
         return getLocuriLibere(spectacol_id).size() == s.getNr_locuri() - locuriVandute.size();
     }
 
-    private void verificare(){
-        int ok = 0;
-        for (Spectacol s : getAllSpectacol()) {
-            if (checkLocuriLibere(s.getId()) && checkSoldTotal())
-                ok = 1;
-            else
-                ok = 0;
-        }
-        if (ok == 1)
-            System.out.println("Testarea a fost efectuata cu succes!");
-        else
-            System.out.println("Au fost probleme odata cu testarea!");
-        try {
-            FileWriter myWriter = new FileWriter("verificari.txt",true);
-            myWriter.write(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss"))+"\n");
-            for(var s:spectacolRepo.findAll()) {
-                myWriter.write(s+", sold: "+getSoldSpectacol(s.getId())+", locuri vandute: "+s.getLocuri_vandute()+"\n");
+    private Future<?> verificare() {
+        return (executor.submit(() -> {
+            int ok = 0;
+            for (Spectacol s : getAllSpectacol()) {
+                if (checkLocuriLibere(s.getId()) && checkSoldTotal())
+                    ok = 1;
+                else
+                    ok = 0;
             }
-            if(ok==1)
-                myWriter.write("Rezultat verificare: corect");
+            if (ok == 1)
+                System.out.println("Testarea a fost efectuata cu succes!");
             else
-                myWriter.write("Rezultat verificare: incorect");
-            myWriter.write("\n");
-            myWriter.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+                System.out.println("Au fost probleme odata cu testarea!");
+            try {
+                FileWriter myWriter = new FileWriter("verificari.txt", true);
+                myWriter.write(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")) + "\n");
+                for (var s : spectacolRepo.findAll()) {
+                    myWriter.write(s + ", sold: " + getSoldSpectacol(s.getId()) + ", locuri vandute: " + s.getLocuri_vandute() + "\n");
+                }
+                if (ok == 1)
+                    myWriter.write("Rezultat verificare: corect");
+                else
+                    myWriter.write("Rezultat verificare: incorect");
+                myWriter.write("\n");
+                myWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }));
     }
 }
 
