@@ -4,28 +4,29 @@ import app.model.Sala;
 import app.model.Spectacol;
 import app.model.Vanzare;
 
+import java.rmi.RemoteException;
 import java.util.List;
 
 public interface IService {
-    public List<Spectacol> getAllSpectacolBySalaId(int salaId);
+    public List<Spectacol> getAllSpectacolBySalaId(int salaId) throws RemoteException;
 
-    public List<Vanzare> getAllVanzareBySpectacolId(int spectacolId);
+    public List<Vanzare> getAllVanzareBySpectacolId(int spectacolId) throws RemoteException;
 
 
-    public List<Sala> getAllSala();
+    public List<Sala> getAllSala() throws RemoteException;
 
-    public List<Spectacol> getAllSpectacol();
+    public List<Spectacol> getAllSpectacol() throws RemoteException;
 
-    public List<Vanzare> getAllVanzare();
+    public List<Vanzare> getAllVanzare() throws RemoteException;
 
-    public int getSoldTotal();
+    public int getSoldTotal() throws RemoteException;
 
-    public List<Integer> getLocuriLibere(int spectacol_id);
+    public List<Integer> getLocuriLibere(int spectacol_id) throws RemoteException;
 
-    public boolean checkLocuriLibere(int spectacol_id);
+    public boolean checkLocuriLibere(int spectacol_id) throws RemoteException;
 
-    public void addVanzare(Vanzare v);
+    public void addVanzare(Vanzare v) throws RemoteException;
 
-    public boolean checkSoldTotal();
+    public boolean checkSoldTotal() throws RemoteException;
 
 }

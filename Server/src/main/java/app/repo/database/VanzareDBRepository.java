@@ -110,7 +110,7 @@ public class VanzareDBRepository implements IVanzare {
                 List<Integer> locuriVandute = new ArrayList<>();
 
                 PreparedStatement preStmt2 = con.prepareStatement("select * from vanzareLocuri where vanzare_id=?");
-                preStmt2.setInt(1,id);
+                preStmt2.setInt(1,idd);
                 ResultSet result2 = preStmt2.executeQuery();
                 while (result2.next()) {
                     int nrLoc = result2.getInt("nr_loc");

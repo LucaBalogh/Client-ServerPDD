@@ -139,4 +139,46 @@ public class SpectacolDBRepository implements ISpectacol {
         logger.traceExit(spectacole);
         return spectacole;
     }
+
+    @Override
+    public Spectacol findOne(int id) {
+        logger.traceEntry();
+        Connection con = dbUtils.getConnection();
+        try(PreparedStatement preStmt=con.prepareStatement("select * from spectacol where id=?")){
+            preStmt.setInt(1,id);
+            ResultSet result=preStmt.executeQuery();
+            System.out.println("findOneSpectacol  "+ "resOk");
+            while(result.next()){
+                int idd = result.getInt("id");
+                LocalDate data_spectacol = LocalDate.parse(result.getString("data_spectacol"));
+                String titlu = result.getString("title");
+                int pret_bilet = result.getInt("pret_bilet");
+                int sala_id = result.getInt("sala_id");
+
+                List<Integer> locuriVandute = new ArrayList<>();
+
+                PreparedStatement preStmt2 = con.prepareStatement("select * from vanzare where spectacol_id=?");
+                preStmt2.setInt(1,idd);
+                ResultSet result2 = preStmt2.executeQuery();
+                while (result2.next()){
+                    int id_v = result2.getInt("id");
+                    PreparedStatement preStmt3 = con.prepareStatement("select * from vanzareLocuri where vanzare_id=?");
+                    preStmt3.setInt(1,id_v);
+                    ResultSet result3 = preStmt3.executeQuery();
+                    while (result3.next()){
+                        int nrLoc = result3.getInt("nr_loc");
+                        locuriVandute.add(nrLoc);
+                    }
+                }
+                Spectacol s = new Spectacol(data_spectacol, titlu, pret_bilet, sala_id);
+                s.setId(idd);
+                s.setLocuri_vandute(locuriVandute);
+                logger.traceExit(s);
+                return s;
+            }
+        } catch (SQLException e) {
+            System.out.println("Error DB "+e);
+        }
+        return null;
+    }
 }
