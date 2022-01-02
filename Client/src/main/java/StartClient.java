@@ -60,11 +60,10 @@ public class StartClient {
                                 if (!liber)
                                     cumparare.cancel();
                             }
-                            catch (RemoteException ex){
+                            catch (RemoteException ex) {
                                 System.out.println("Server ul nu mai este activ!");
                                 cumparare.cancel();
                             }
-
                         }
                     },
                     5000,
