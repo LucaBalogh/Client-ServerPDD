@@ -1,5 +1,6 @@
 package app.service;
 
+import app.MyServerException;
 import app.model.Sala;
 import app.model.Spectacol;
 import app.model.Vanzare;
@@ -21,7 +22,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public class Service implements IService {
-    private static final int NTHREADS = 1;
+    private static final int NTHREADS = 5;
     private ExecutorService executor;
 
 
@@ -95,8 +96,7 @@ public class Service implements IService {
     public void addVanzare(Vanzare v) {
         try {
             vanzareAsync(v).get();
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
+        } catch (InterruptedException | ExecutionException ignored) {
         }
     }
 
@@ -105,6 +105,7 @@ public class Service implements IService {
             if (getLocuriLibere(v.getSpectacol()).containsAll(v.getLocuri_vandute())) {
                 vanzareRepo.add(v);
             }
+            else throw new MyServerException("Unele dintre locurile solicitate au fost deja vandute!");
         });
 
     }
@@ -179,11 +180,9 @@ public class Service implements IService {
 
     private Future<?> verificare() {
         return (executor.submit(() -> {
-            int ok = 0;
+            int ok = 1;
             for (Spectacol s : getAllSpectacol()) {
-                if (checkLocuriLibere(s.getId()) && checkSoldTotal())
-                    ok = 1;
-                else
+                if (!(checkLocuriLibere(s.getId()) && checkSoldTotal()))
                     ok = 0;
             }
             if (ok == 1)

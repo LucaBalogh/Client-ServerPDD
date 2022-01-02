@@ -1,5 +1,6 @@
 package app.repo.database;
 
+import app.MyServerException;
 import app.model.Vanzare;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -35,6 +36,11 @@ public class VanzareDBRepository implements IVanzare {
         try (PreparedStatement preStmt = con.prepareStatement("insert into vanzare (data_vanzare,spectacol_id) values (?,?)", new String[]{"id"})) {
             preStmt.setString(1, elem.getDate_vanzare().toString());
             preStmt.setInt(2, elem.getSpectacol());
+
+            for(Vanzare v:findAllBySpectacolId(elem.getSpectacol()))
+                for(int loc : v.getLocuri_vandute())
+                    if(elem.getLocuri_vandute().contains(loc))
+                        throw new MyServerException("Unele dintre locurile solicitate au fost deja vandute!");
 
             int result = preStmt.executeUpdate();
             ResultSet rs = preStmt.getGeneratedKeys();

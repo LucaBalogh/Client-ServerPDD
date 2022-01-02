@@ -3,7 +3,7 @@ package app.model;
 import java.time.LocalDate;
 import java.util.List;
 
-public class Vanzare extends Entity<Integer> {
+public class Vanzare extends Entity {
     private LocalDate date_vanzare;
 
     private int spectacol_id;

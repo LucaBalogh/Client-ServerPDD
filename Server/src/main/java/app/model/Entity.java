@@ -1,7 +1,7 @@
 package app.model;
 import java.io.Serializable;
 
-public class Entity<ID> implements Serializable {
+public class Entity implements Serializable {
     private int id;
 
     public int getId() {

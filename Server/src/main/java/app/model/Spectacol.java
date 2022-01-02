@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Spectacol extends Entity<Integer> {
+public class Spectacol extends Entity {
 
     private LocalDate data_spectacol;
 

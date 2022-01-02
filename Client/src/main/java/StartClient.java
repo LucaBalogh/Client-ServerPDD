@@ -1,3 +1,4 @@
+import app.MyServerException;
 import app.model.Spectacol;
 import app.model.Vanzare;
 import app.service.IService;
@@ -15,7 +16,7 @@ public class StartClient {
         return (int) (Math.random() * range) + min;
     }
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         try {
             ApplicationContext factory = new ClassPathXmlApplicationContext("classpath:spring-client.xml");
             IService server = (IService) factory.getBean("appService");
@@ -47,6 +48,8 @@ public class StartClient {
                                     try {
                                         server.addVanzare(v);
                                         System.out.println("Vanzarea a fost realizata cu succes!");
+                                    } catch (MyServerException ex) {
+                                        System.out.println(ex.getMessage() + ". Vanzarea nu a putut fi realizata!");
                                     } catch (Exception ex) {
                                         System.out.println("Vanzarea nu a putut fi realizata!");
                                     }
@@ -57,10 +60,11 @@ public class StartClient {
                                         liber = true;
                                         break;
                                     }
-                                if (!liber)
+                                if (!liber) {
+                                    System.out.println("Nu mai exista locuri libere la niciun spectacol!");
                                     cumparare.cancel();
-                            }
-                            catch (RemoteException ex) {
+                                }
+                            } catch (RemoteException ex) {
                                 System.out.println("Server ul nu mai este activ!");
                                 cumparare.cancel();
                             }
@@ -70,7 +74,7 @@ public class StartClient {
                     2000
             );
         } catch (Exception e) {
-            System.out.println("Server ul nu mai este activ!");
+            System.out.println("Server-ul nu mai este activ!");
         }
     }
 }

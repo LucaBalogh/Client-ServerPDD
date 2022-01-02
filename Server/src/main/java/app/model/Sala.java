@@ -1,6 +1,6 @@
 package app.model;
 
-public class Sala extends Entity<Integer> {
+public class Sala extends Entity {
 
     private int nr_locuri;
 
