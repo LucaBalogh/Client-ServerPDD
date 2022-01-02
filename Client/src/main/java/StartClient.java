@@ -52,8 +52,10 @@ public class StartClient {
                             System.out.println("Vanzarea nu a putut fi realizata!");
                         }
 
-                        if(server.getLocuriLibere(spectacol_id).size() == 0)
+                        if(server.getLocuriLibere(spectacol_id).size() == 0){
+                            System.out.println("Nu mai sunt locuri libere la acest spectacol!");
                             cumparare.cancel();
+                        }
                     }
                 },
                 5000,
