@@ -93,7 +93,7 @@ public class Service implements IService {
     }
 
     @Override
-    public void addVanzare(Vanzare v) {
+    public synchronized void addVanzare(Vanzare v) {
         try {
             vanzareAsync(v).get();
         } catch (InterruptedException | ExecutionException ignored) {
